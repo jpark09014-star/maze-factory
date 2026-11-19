@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>베타아빠 미로공장 - 문제·정답 미로 도안 만들기</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,/*ICON64*/">
+<meta name="description" content="버튼 한 번으로 새 미로를 만들고 문제와 정답지를 A4로 프린트하는 무료 미로 도안 생성기">
+<style>
+@font-face{font-family:"Jua";src:url(data:font/ttf;base64,/*JUA_FONT*/) format("truetype");font-display:block}
+:root{--pink:#ff8fba;--pink2:#ffe3ec;--purple:#7b5cc4;--sky:#dff3ff;--yellow:#ffd43b;--mint:#c3f0dc;--ink:#3d3570;--card:#ffffffee;--r:22px}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{word-break:keep-all}
+body{font-family:"Jua","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;
+ background:radial-gradient(circle at 12% 18%,#fff6c9 0 90px,transparent 91px),radial-gradient(circle at 88% 12%,#ffe3ec 0 120px,transparent 121px),radial-gradient(circle at 80% 85%,#d9f7e8 0 140px,transparent 141px),linear-gradient(160deg,#e6f4ff 0%,#f3ecff 55%,#fff0f6 100%);background-attachment:fixed}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 18px 30px}
+header{display:flex;align-items:center;gap:14px;margin:4px 0 16px}
+.logo{width:68px;height:68px;border-radius:22px;background:#fff;box-shadow:0 6px 0 #e3d8ff;display:grid;place-items:center;flex:none}
+h1{margin:0;font-size:34px;letter-spacing:-.5px;color:#5b3fb0}
+h1 small{display:block;font-size:16px;color:#8a7cc4;letter-spacing:0;margin-top:2px}
+.help-btn{margin-left:auto;border:0;background:#fff;color:#7b5cc4;font:inherit;font-size:16px;padding:10px 16px;border-radius:999px;box-shadow:0 4px 0 #e3d8ff;cursor:pointer}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:18px;align-items:start}
+.card{background:var(--card);border-radius:var(--r);padding:16px 18px;box-shadow:0 6px 0 #e8e0ff,0 10px 24px #b9a8ff22;margin-bottom:14px}
+.card h2{margin:0 0 10px;font-size:19px;display:flex;align-items:center;gap:8px}
+.num{width:26px;height:26px;border-radius:50%;background:var(--pink);color:#fff;display:grid;place-items:center;font-size:15px}
+.themes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.theme{border:3px solid transparent;background:#f7f4ff;border-radius:18px;padding:8px 2px 6px;cursor:pointer;text-align:center;font:inherit;font-size:13px;color:var(--ink);transition:transform .15s}
+.theme:hover{transform:translateY(-2px)}
+.theme canvas{display:block;margin:0 auto 4px}
+.theme.on{border-color:var(--pink);background:#fff0f6;box-shadow:0 4px 0 #ffc2d9}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{border:0;font:inherit;font-size:16px;padding:10px 14px;border-radius:999px;background:#f1edff;color:var(--ink);cursor:pointer;box-shadow:0 3px 0 #ddd3ff}
+.pill.on{background:var(--purple);color:#fff;box-shadow:0 3px 0 #4f3a91}
+.pill small{opacity:.75;font-size:12px;margin-left:3px}
+.custom{display:none;margin-top:12px;background:#f9f7ff;border-radius:16px;padding:10px 12px}
+.custom.show{display:block}
+.row{display:flex;align-items:center;gap:10px;margin:6px 0}
+.row label{min-width:62px}
+.row input[type=range]{flex:1;accent-color:var(--purple)}
+.row output{min-width:30px;text-align:right}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:44px;height:44px;border-radius:50%;border:0;background:var(--yellow);font:inherit;font-size:24px;color:#6b4d00;cursor:pointer;box-shadow:0 3px 0 #e0b100}
+.stepper .val{font-size:28px;min-width:60px;text-align:center}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;cursor:pointer}
+.switch input{display:none}
+.tog{width:56px;height:32px;border-radius:999px;background:#ddd6f3;position:relative;transition:.2s;flex:none}
+.tog:after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 4px #0002}
+.switch input:checked+.tog{background:#5ccf98}
+.switch input:checked+.tog:after{left:28px}
+.seed{display:flex;gap:8px}
+.seed input{flex:1;min-width:0;font:inherit;font-size:20px;padding:8px 12px;border-radius:14px;border:2px solid #e3dbff;color:var(--ink);background:#fff}
+.dice{border:0;font:inherit;font-size:16px;padding:0 14px;border-radius:14px;background:var(--mint);color:#17694a;cursor:pointer;box-shadow:0 3px 0 #8fd9b8}
+.hint{font-size:13px;color:#8a80b8;margin:6px 0 0}
+.big{display:flex;gap:10px;margin-top:4px}
+.big button{flex:1;border:0;font:inherit;font-size:20px;padding:16px 10px;border-radius:20px;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px}
+.go{background:linear-gradient(180deg,#ff9cc3,#ff6fa5);box-shadow:0 5px 0 #d94f86}
+.new{background:linear-gradient(180deg,#8fd3ff,#4fb0f0);box-shadow:0 5px 0 #2f86c4}
+.big button:active,.pill:active,.dice:active,.stepper button:active{transform:translateY(3px);box-shadow:none}
+.preview{position:sticky;top:12px}
+.tabs{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.tab{border:0;font:inherit;font-size:16px;padding:8px 16px;border-radius:999px;background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 3px 0 #e3d8ff}
+.tab.on{background:var(--pink);color:#fff;box-shadow:0 3px 0 #d94f86}
+.pager{margin-left:auto;display:flex;align-items:center;gap:6px}
+.pager button{border:0;width:36px;height:36px;border-radius:50%;background:#fff;font:inherit;font-size:18px;cursor:pointer;color:var(--purple);box-shadow:0 3px 0 #e3d8ff}
+.paper{background:#fff;border-radius:14px;box-shadow:0 10px 30px #7b5cc433;padding:10px;display:flex;justify-content:center}
+.paper img{width:auto;max-width:100%;max-height:calc(100vh - 150px);height:auto;display:block;border-radius:6px;border:1px solid #eee}
+.info{font-size:14px;color:#8a80b8;margin-top:8px;text-align:center}
+footer{margin-top:18px;text-align:center;font-size:13px;color:#8a80b8;line-height:1.7}
+footer a{color:#7b5cc4}
+.modal{position:fixed;inset:0;background:#3d357066;display:none;place-items:center;padding:16px;z-index:9}
+.modal.show{display:grid}
+.modal .box{background:#fff;border-radius:24px;max-width:460px;padding:22px;box-shadow:0 8px 0 #e3d8ff}
+.modal ol{padding-left:22px;line-height:1.8;margin:8px 0 14px}
+.modal button{border:0;font:inherit;font-size:17px;padding:10px 20px;border-radius:999px;background:var(--purple);color:#fff;cursor:pointer}
+#printArea{display:none}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.preview{position:static}h1{font-size:28px}.themes{grid-template-columns:repeat(5,1fr)}.paper img{max-height:none;width:100%}}
+@media (max-width:520px){.wrap{padding:12px}h1{font-size:25px}h1 small{font-size:13px}.logo{width:54px;height:54px;border-radius:18px}.logo canvas{transform:scale(.85)}.help-btn{font-size:14px;padding:8px 12px}.theme{font-size:12px}.big{position:sticky;bottom:10px;z-index:5}}
+@media print{
+ @page{size:A4 portrait;margin:0}
+ body{background:#fff}
+ .wrap,.modal{display:none!important}
+ #printArea{display:block}
+ .sheet{width:210mm;height:296mm;page-break-after:always;break-after:page;display:flex;align-items:center;justify-content:center;overflow:hidden}
+ .sheet:last-child{page-break-after:auto;break-after:auto}
+ .sheet img{width:100%;height:100%;object-fit:contain}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header>
+  <div class="logo"><canvas id="logo" width="56" height="56"></canvas></div>
+  <h1>베타아빠 미로공장<small>버튼 한 번이면 새 미로가 뚝딱! 문제지와 정답지를 A4로 뽑아요</small></h1>
+  <button class="help-btn" id="helpBtn">사용 방법</button>
+ </header>
+ <div class="grid">
+  <section>
+   <div class="card"><h2><span class="num">1</span>테마 고르기</h2><div class="themes" id="themes"></div></div>
+   <div class="card"><h2><span class="num">2</span>난이도</h2>
+    <div class="pills" id="levels"></div>
+    <div class="custom" id="custom">
+     <div class="row"><label>가로 칸</label><input type="range" id="cols" min="5" max="30" value="12"><output id="colsV">12</output></div>
+     <div class="row"><label>세로 칸</label><input type="range" id="rows" min="7" max="40" value="17"><output id="rowsV">17</output></div>
+     <p class="hint">칸이 많을수록 어려워져요. 세로가 가로보다 1.4배쯤이면 A4에 꽉 차요.</p>
+    </div>
+   </div>
+   <div class="card"><h2><span class="num">3</span>몇 장 만들까요?</h2>
+    <div class="stepper"><button id="minus" aria-label="한 장 빼기">-</button><span class="val" id="count">1</span><button id="plus" aria-label="한 장 더하기">+</button><span class="hint" style="margin:0">장마다 다른 미로가 나와요 (최대 10장)</span></div>
+   </div>
+   <div class="card"><h2><span class="num">4</span>꾸미기</h2>
+    <label class="switch"><span>이름·날짜 칸 넣기</span><input type="checkbox" id="nameOn" checked><span class="tog"></span></label>
+    <label class="switch"><span>정답지도 같이 뽑기</span><input type="checkbox" id="ansOn" checked><span class="tog"></span></label>
+   </div>
+   <div class="card"><h2><span class="num">5</span>미로 번호</h2>
+    <div class="seed"><input id="seed" inputmode="numeric" maxlength="6" aria-label="미로 번호"><button class="dice" id="dice">주사위</button></div>
+    <p class="hint">번호가 같으면 똑같은 미로가 다시 나와요. 정답지를 나중에 뽑을 때 번호를 적어 두세요.</p>
+   </div>
+   <div class="big"><button class="new" id="newBtn">새 미로</button><button class="go" id="printBtn">프린트하기</button></div>
+  </section>
+  <section class="preview">
+   <div class="tabs">
+    <button class="tab on" data-v="q">문제</button><button class="tab" data-v="a">정답</button>
+    <div class="pager"><button id="prev" aria-label="이전 장">‹</button><span id="pageInfo">1 / 1</span><button id="next" aria-label="다음 장">›</button></div>
+   </div>
+   <div class="paper"><img id="pv" alt="미로 미리보기"></div>
+   <div class="info" id="info"></div>
+  </section>
+ </div>
+ <footer>가정·교육용 무료 프로그램이에요. 만든 미로는 집과 교실에서 자유롭게 출력해 쓰세요.<br>
+ 프로그램은 파일 대신 블로그 링크로 공유해 주세요 · 베타아빠 <a href="https://blog.naver.com/geekpapa" target="_blank" rel="noopener">blog.naver.com/geekpapa</a> · 인스타그램 @dad_in_beta</footer>
+</div>
+<div class="modal" id="help"><div class="box">
+ <h2 style="margin:0 0 4px;color:#5b3fb0">이렇게 써요</h2>
+ <ol>
+  <li>좋아하는 <b>테마</b>를 골라요</li>
+  <li><b>난이도</b>를 고르고, 몇 장 뽑을지 정해요</li>
+  <li><b>새 미로</b>를 누르면 매번 다른 미로가 나와요</li>
+  <li><b>프린트하기</b>를 누르고 용지 A4, 배율 100%(또는 기본)로 출력해요</li>
+  <li>문제지가 먼저, 정답지가 뒤에 나와요. 정답지는 엄마·아빠가 챙겨 두세요!</li>
+ </ol>
+ <p class="hint">PDF로 저장하려면 프린트 창에서 프린터를 'PDF로 저장'으로 바꾸면 돼요.</p>
+ <button id="helpClose">알겠어요</button>
+</div></div>
+<div id="printArea"></div>
+<script>
+(()=>{
+const W=1240,H=1754,MX=145,MW=950;
+const LV={easy:{name:'쉬움',cols:9,rows:13,d:'어린 친구'},mid:{name:'보통',cols:14,rows:20,d:'초등 저학년'},hard:{name:'어려움',cols:20,rows:28,d:'집중력 쑥쑥'},custom:{name:'직접',cols:12,rows:17,d:'내 맘대로'}};
+const THEMES={
+ moon:{label:'달나라',title:'달나라 미로찾기',sub:'해에서 출발해서 달까지 가요!',start:'sun',goal:'moon',head:['#dbe7ff','#cfd0ff'],titleC:'#2b3a8c',subC:'#4a5bb5',wall:'#2f3f8f',path:'#f59f00',deco:'star',decoC:'#ffd43b',startC:'#ffb300',goalC:'#5c6bc0',seed:11},
+ heart:{label:'하트',title:'하트 요정 미로찾기',sub:'별에서 출발해서 하트까지 가요!',start:'star',goal:'heart',head:['#ffe3ec','#e2dcff'],titleC:'#7b3a96',subC:'#9a5bb5',wall:'#6b4c9a',path:'#ff4d88',deco:'heart',decoC:'#ff8fba',startC:'#ffc933',goalC:'#ff3d7f',seed:0},
+ apple:{label:'사과',title:'사과 찾아가기 미로',sub:'집에서 출발해서 사과까지 가요!',start:'house',goal:'apple',head:['#e6f7d9','#fff3c4'],titleC:'#2e7d32',subC:'#558b2f',wall:'#3e7b3a',path:'#e53935',deco:'apple',decoC:'#ef5350',startC:'#ff9800',goalC:'#e53935',seed:23},
+ sea:{label:'바다',title:'바다 별 찾기 미로',sub:'물고기가 별까지 헤엄쳐 가요!',start:'fish',goal:'star',head:['#d6f1ff','#c9e6ff'],titleC:'#0b5d8a',subC:'#1c7ed6',wall:'#1c6ea4',path:'#ff7043',deco:'fish',decoC:'#4fc3f7',startC:'#ff9800',goalC:'#ffc107',seed:37},
+ garden:{label:'꽃길',title:'꽃길 미로찾기',sub:'꽃이 해님을 만나러 가요!',start:'flower',goal:'sun',head:['#fff3c4','#ffe0f0'],titleC:'#b5651d',subC:'#d4881f',wall:'#8e6b3a',path:'#43a047',deco:'flower',decoC:'#f48fb1',startC:'#ec407a',goalC:'#ffb300',seed:41}
+};
+const FONT='"Jua","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gen(cols,rows,seed){const r=rng(seed);
+ const right=Array.from({length:rows},()=>Array(cols).fill(true)),down=Array.from({length:rows},()=>Array(cols).fill(true));
+ const seen=Array.from({length:rows},()=>Array(cols).fill(false));const st=[[0,0]];seen[0][0]=true;
+ while(st.length){const[x,y]=st[st.length-1];const nb=[];if(x>0&&!seen[y][x-1])nb.push([x-1,y,'L']);if(x<cols-1&&!seen[y][x+1])nb.push([x+1,y,'R']);if(y>0&&!seen[y-1][x])nb.push([x,y-1,'U']);if(y<rows-1&&!seen[y+1][x])nb.push([x,y+1,'D']);
+  if(!nb.length){st.pop();continue}const[nx,ny,d]=nb[(r()*nb.length)|0];if(d==='L')right[y][x-1]=false;if(d==='R')right[y][x]=false;if(d==='U')down[y-1][x]=false;if(d==='D')down[y][x]=false;seen[ny][nx]=true;st.push([nx,ny]);}
+ return{right,down}}
+function open(m,x,y,nx,ny){if(nx===x+1&&ny===y)return!m.right[y][x];if(nx===x-1&&ny===y)return!m.right[y][nx];if(ny===y+1&&nx===x)return!m.down[y][x];if(ny===y-1&&nx===x)return!m.down[ny][x];return false}
+function bfs(m,cols,rows){const prev=new Map(),q=[[0,0]];let h=0;prev.set('0,0',null);while(h<q.length){const[x,y]=q[h++];if(x===cols-1&&y===rows-1)break;for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=cols||ny>=rows||prev.has(nx+','+ny))continue;if(open(m,x,y,nx,ny)){prev.set(nx+','+ny,[x,y]);q.push([nx,ny])}}}
+ const path=[];let cur=[cols-1,rows-1];if(!prev.has(cur.join(',')))return null;while(cur){path.push(cur);cur=prev.get(cur.join(','))}return path.reverse()}
+const ICON={
+ star:(c,cx,cy,s)=>{c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?s*.45:s;c.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r)}c.closePath();c.fill()},
+ heart:(c,cx,cy,s)=>{s*=.8;c.beginPath();c.moveTo(cx,cy+s*.9);c.bezierCurveTo(cx-s*1.5,cy-s*.1,cx-s*.7,cy-s*1.1,cx,cy-s*.35);c.bezierCurveTo(cx+s*.7,cy-s*1.1,cx+s*1.5,cy-s*.1,cx,cy+s*.9);c.closePath();c.fill()},
+ sun:(c,cx,cy,s)=>{c.beginPath();c.arc(cx,cy,s*.55,0,7);c.fill();c.lineWidth=Math.max(2,s*.12);c.lineCap='round';c.strokeStyle=c.fillStyle;for(let i=0;i<8;i++){const a=i*Math.PI/4;c.beginPath();c.moveTo(cx+Math.cos(a)*s*.75,cy+Math.sin(a)*s*.75);c.lineTo(cx+Math.cos(a)*s,cy+Math.sin(a)*s);c.stroke()}},
+ moon:(c,cx,cy,s)=>{const t=document.createElement('canvas');t.width=t.height=Math.ceil(s*2.4);const x=t.getContext('2d');x.fillStyle=c.fillStyle;x.beginPath();x.arc(t.width/2,t.height/2,s*.85,0,7);x.fill();x.globalCompositeOperation='destination-out';x.beginPath();x.arc(t.width/2+s*.45,t.height/2-s*.2,s*.75,0,7);x.fill();c.drawImage(t,cx-t.width/2,cy-t.height/2)},
+ apple:(c,cx,cy,s)=>{const f=c.fillStyle;c.beginPath();c.arc(cx-s*.3,cy+s*.1,s*.62,0,7);c.arc(cx+s*.3,cy+s*.1,s*.62,0,7);c.fill();c.fillStyle='#2e7d32';c.beginPath();c.ellipse(cx+s*.3,cy-s*.65,s*.3,s*.14,-.5,0,7);c.fill();c.strokeStyle='#5d4037';c.lineWidth=Math.max(2,s*.1);c.beginPath();c.moveTo(cx,cy-s*.45);c.lineTo(cx,cy-s*.8);c.stroke();c.fillStyle=f},
+ house:(c,cx,cy,s)=>{const f=c.fillStyle;c.fillRect(cx-s*.7,cy-s*.1,s*1.4,s*.9);c.beginPath();c.moveTo(cx-s*.95,cy-s*.05);c.lineTo(cx,cy-s*.95);c.lineTo(cx+s*.95,cy-s*.05);c.closePath();c.fill();c.fillStyle='#fff';c.fillRect(cx-s*.18,cy+s*.25,s*.36,s*.55);c.fillStyle=f},
+ fish:(c,cx,cy,s)=>{const f=c.fillStyle;c.beginPath();c.ellipse(cx,cy,s*.8,s*.5,0,0,7);c.fill();c.beginPath();c.moveTo(cx-s*.7,cy);c.lineTo(cx-s*1.1,cy-s*.45);c.lineTo(cx-s*1.1,cy+s*.45);c.closePath();c.fill();c.fillStyle='#fff';c.beginPath();c.arc(cx+s*.4,cy-s*.1,s*.13,0,7);c.fill();c.fillStyle='#222';c.beginPath();c.arc(cx+s*.43,cy-s*.1,s*.06,0,7);c.fill();c.fillStyle=f},
+ flower:(c,cx,cy,s)=>{const f=c.fillStyle;for(let i=0;i<6;i++){const a=i*Math.PI/3;c.beginPath();c.ellipse(cx+Math.cos(a)*s*.5,cy+Math.sin(a)*s*.5,s*.38,s*.3,a,0,7);c.fill()}c.fillStyle='#ffd54f';c.beginPath();c.arc(cx,cy,s*.28,0,7);c.fill();c.fillStyle=f}
+};
+function mazeSeed(seed,i,themeKey,cols,rows){return (seed*1009+i*7919+THEMES[themeKey].seed*131+cols*17+rows*31)|0}
+function build(o){ // o:{theme,cols,rows,seed,idx,name}
+ const T=THEMES[o.theme],{cols,rows}=o;
+ const m=gen(cols,rows,mazeSeed(o.seed,o.idx,o.theme,cols,rows)),path=bfs(m,cols,rows);
+ let ok=!!path&&path[0].join()==='0,0'&&path[path.length-1].join()===(cols-1)+','+(rows-1);
+ if(ok)for(let i=1;i<path.length;i++){const[a,b]=path[i-1],[c2,d]=path[i];if(!open(m,a,b,c2,d))ok=false}
+ let passages=0;for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){if(x<cols-1&&!m.right[y][x])passages++;if(y<rows-1&&!m.down[y][x])passages++}
+ ok=ok&&passages===cols*rows-1;
+ return{m,path,ok,passages,T,o};
+}
+function render(b,ans){
+ const{m,path,T,o}=b,{cols,rows}=o;
+ const MY=o.name?345:268,MH=o.name?1290:1357;
+ const cs=Math.min(MW/cols,MH/rows),ox=MX+(MW-cs*cols)/2,oy=MY+(MH-cs*rows)/2*0;
+ const cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
+ c.fillStyle='#fff';c.fillRect(0,0,W,H);
+ const g=c.createLinearGradient(0,0,W,0);g.addColorStop(0,T.head[0]);g.addColorStop(1,T.head[1]);c.fillStyle=g;c.fillRect(0,0,W,230);
+ c.fillStyle=T.decoC;ICON[T.deco](c,110,112,26);ICON[T.deco](c,1130,112,26);
+ c.fillStyle=T.titleC;c.font='400 92px '+FONT;c.textAlign='center';c.textBaseline='alphabetic';c.fillText(T.title,W/2,108);
+ const lvName=o.levelName+(o.levelName==='직접'?' '+cols+'x'+rows:'');
+ c.fillStyle=T.subC;c.font='400 44px '+FONT;c.fillText(lvName+(ans?' 정답':'')+'  ·  '+T.sub,W/2,185);
+ if(o.name){c.fillStyle=T.subC;c.font='400 34px '+FONT;c.textAlign='left';c.fillText('이름',MX,280);c.fillText('날짜',MX+600,280);
+  c.strokeStyle='#c9c3e6';c.lineWidth=3;c.beginPath();c.moveTo(MX+80,288);c.lineTo(MX+540,288);c.moveTo(MX+680,288);c.lineTo(MX+MW,288);c.stroke()}
+ const wall=Math.max(3,Math.min(10,cs*.1)),pw=Math.max(4,Math.min(12,cs*.13));
+ c.strokeStyle=T.wall;c.lineWidth=wall;c.lineCap='round';c.beginPath();c.rect(ox,oy,cs*cols,cs*rows);
+ for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){if(x<cols-1&&m.right[y][x]){c.moveTo(ox+(x+1)*cs,oy+y*cs);c.lineTo(ox+(x+1)*cs,oy+(y+1)*cs)}if(y<rows-1&&m.down[y][x]){c.moveTo(ox+x*cs,oy+(y+1)*cs);c.lineTo(ox+(x+1)*cs,oy+(y+1)*cs)}}
+ c.stroke();
+ // open entrance / exit gaps
+ c.strokeStyle='#fff';c.lineWidth=wall+2;c.lineCap='butt';c.beginPath();c.moveTo(ox,oy+cs*.18);c.lineTo(ox,oy+cs*.82);c.moveTo(ox+cs*cols,oy+cs*(rows-.82));c.lineTo(ox+cs*cols,oy+cs*(rows-.18));c.stroke();
+ if(ans&&path){c.strokeStyle=T.path;c.lineWidth=pw;c.lineJoin='round';c.lineCap='round';c.beginPath();path.forEach(([x,y],i)=>{const px=ox+(x+.5)*cs,py=oy+(y+.5)*cs;i?c.lineTo(px,py):c.moveTo(px,py)});c.stroke()}
+ c.fillStyle=T.startC;ICON[T.start](c,ox+cs*.5,oy+cs*.5,Math.min(cs*.34,40));
+ c.fillStyle=T.goalC;ICON[T.goal](c,ox+cs*(cols-.5),oy+cs*(rows-.5),Math.min(cs*.34,40));
+ c.fillStyle=T.subC;c.font='400 30px '+FONT;c.textAlign='left';c.fillText('출발',ox,oy-10);c.textAlign='right';c.fillText('도착',ox+cs*cols,oy+cs*rows+40);
+ c.fillStyle='#999';c.font='400 24px '+FONT;c.textAlign='center';
+ c.fillText('미로 번호 '+o.seed+'-'+(o.idx+1)+'  ·  베타아빠 미로공장  ·  가정·교육용 무료 도안',W/2,1722);
+ return cv;
+}
+// ---------- UI ----------
+const $=id=>document.getElementById(id);
+const st={theme:'moon',level:'easy',count:1,seed:rand(),view:'q',page:0,cols:12,rows:17};
+function rand(){return 10000+Math.floor(Math.random()*90000)}
+// logo
+(()=>{const c=$('logo').getContext('2d');c.fillStyle='#ffb300';ICON.sun(c,18,18,13);c.fillStyle='#7b5cc4';ICON.moon(c,36,36,17);c.fillStyle='#ff8fba';ICON.heart(c,44,14,8)})();
+// theme cards
+for(const k in THEMES){const T=THEMES[k],b=document.createElement('button');b.className='theme'+(k===st.theme?' on':'');b.dataset.k=k;
+ const cv=document.createElement('canvas');cv.width=44;cv.height=44;const c=cv.getContext('2d');c.fillStyle=T.goalC;ICON[T.goal](c,22,23,15);
+ b.append(cv,document.createTextNode(T.label));b.onclick=()=>{st.theme=k;document.querySelectorAll('.theme').forEach(e=>e.classList.toggle('on',e.dataset.k===k));update()};$('themes').append(b)}
+for(const k in LV){const b=document.createElement('button');b.className='pill'+(k===st.level?' on':'');b.dataset.k=k;b.innerHTML=LV[k].name+'<small>'+LV[k].d+'</small>';
+ b.onclick=()=>{st.level=k;document.querySelectorAll('.pill').forEach(e=>e.classList.toggle('on',e.dataset.k===k));$('custom').classList.toggle('show',k==='custom');update()};$('levels').append(b)}
+$('cols').oninput=e=>{st.cols=+e.target.value;$('colsV').textContent=st.cols;update()};
+$('rows').oninput=e=>{st.rows=+e.target.value;$('rowsV').textContent=st.rows;update()};
+$('minus').onclick=()=>{st.count=Math.max(1,st.count-1);update()};
+$('plus').onclick=()=>{st.count=Math.min(10,st.count+1);update()};
+$('nameOn').onchange=update;$('ansOn').onchange=update;
+$('seed').value=st.seed;
+$('seed').oninput=e=>{const v=parseInt(e.target.value.replace(/\D/g,''),10);if(v>0){st.seed=v;st.page=0;update()}};
+$('dice').onclick=$('newBtn').onclick=()=>{st.seed=rand();$('seed').value=st.seed;st.page=0;update()};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{st.view=t.dataset.v;document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('on',e===t));draw()});
+$('prev').onclick=()=>{st.page=(st.page+st.count-1)%st.count;draw()};
+$('next').onclick=()=>{st.page=(st.page+1)%st.count;draw()};
+$('helpBtn').onclick=()=>$('help').classList.add('show');$('helpClose').onclick=()=>$('help').classList.remove('show');
+function opts(i){const L=LV[st.level];const cols=st.level==='custom'?st.cols:L.cols,rows=st.level==='custom'?st.rows:L.rows;
+ return{theme:st.theme,cols,rows,seed:st.seed,idx:i,name:$('nameOn').checked,levelName:L.name}}
+let builds=[];
+function update(){$('count').textContent=st.count;if(st.page>=st.count)st.page=0;builds=[];for(let i=0;i<st.count;i++)builds.push(build(opts(i)));draw()}
+function draw(){const b=builds[st.page];const cv=render(b,st.view==='a');$('pv').src=cv.toDataURL('image/png');
+ $('pageInfo').textContent=(st.page+1)+' / '+st.count;
+ $('info').textContent=(b.ok?'정답 길 확인 완료':'확인 필요')+' · '+b.o.cols+'x'+b.o.rows+'칸 · 정답 길 '+b.path.length+'칸 · 미로 번호 '+b.o.seed+'-'+(st.page+1)}
+$('printBtn').onclick=async()=>{const area=$('printArea');area.innerHTML='';const ans=$('ansOn').checked;const list=[];
+ builds.forEach(b=>list.push([b,false]));if(ans)builds.forEach(b=>list.push([b,true]));
+ for(const[b,a]of list){const cv=render(b,a);const blob=await new Promise(r=>cv.toBlob(r,'image/png'));const d=document.createElement('div');d.className='sheet';const im=new Image();im.src=URL.createObjectURL(blob);d.append(im);area.append(d)}
+ await Promise.all([...area.querySelectorAll('img')].map(im=>im.decode().catch(()=>{})));
+ window.print()};
+window.__maze={build,render,THEMES,LV,st,update};
+(document.fonts?document.fonts.load('40px "Jua"','미로').then(()=>document.fonts.ready):Promise.resolve()).then(update,update);
+})();
+</script>
+</body>
+</html>
